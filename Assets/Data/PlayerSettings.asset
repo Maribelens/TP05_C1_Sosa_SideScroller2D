@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2dcb701fdfbd2b4583dfc69e58c551c, type: 3}
+  m_Name: PlayerSettings
+  m_EditorClassIdentifier: 
+  keyCodeJump: 32
+  keyCodeLeft: 276
+  keyCodeRight: 275
+  bulletPrefab: {fileID: 6363435809512879198, guid: a0bd6950026be524b9731a05b7ea6bc9, type: 3}
