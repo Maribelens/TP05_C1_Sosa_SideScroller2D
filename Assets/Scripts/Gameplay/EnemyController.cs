@@ -2,14 +2,32 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    [Header("Referencias")]
+    [SerializeField] private Rigidbody2D rb2D;
     private HealthSystem healthSystem;
     [SerializeField] private GameObject deathEffectPrefab;
 
+    [Header("Movement")]
+    [SerializeField] private float speed;
 
-    private void Awake ()
+    [Header("Audio")]
+    public AudioClip boomSFX;
+    public AudioSource sfxSource;
+
+    private void Awake()
     {
         healthSystem = GetComponent<HealthSystem>();
         healthSystem.onDie += HealthSystem_onDie;
+        if (sfxSource == null)
+        {
+            sfxSource = GetComponent<AudioSource>();
+        }
+        rb2D.bodyType = RigidbodyType2D.Dynamic;
+    }
+
+    private void FixedUpdate()
+    {
+        rb2D.velocity = new Vector2(speed, rb2D.velocity.y);  
     }
 
     private void HealthSystem_onDie()
@@ -21,11 +39,4 @@ public class EnemyController : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.collider.CompareTag("Player") && Time.time > lastDamageTime + damageCooldown) // asegúrate de que el enemigo tenga el tag "Enemy"
-    //    {
-    //        healthSystem.DoDamage(damage);// le quita vida al jugador
-    //    }
-    //}
 }

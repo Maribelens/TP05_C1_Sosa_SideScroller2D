@@ -4,23 +4,64 @@ using UnityEngine;
 public class HealthSystem : MonoBehaviour
 {
     public event Action<int, int> onLifeUpdated; // <currentLife, maxLife>
+    public event Action onInvulnerableStart;
+    public event Action onInvulnerableEnd;
     public event Action onDie;
 
-    private int life = 100;
+    [SerializeField] private AudioClip damageSFX;
+    [SerializeField] private AudioSource sfxSource;
+
     [SerializeField] private int maxLife = 100;
+    private int life = 100;
+    public float invulnerabilityTimer = 0f;
+    //public float powerUpTime = 0f;
+    public bool isInvulnerable = false;
+
 
     private void Awake()
     {
         life = maxLife;
+        if (sfxSource == null)
+        {
+            sfxSource = GetComponent<AudioSource>();
+        }
     }
 
     private void Start ()
     {
-        life = maxLife;
+        //life = maxLife;
         onLifeUpdated?.Invoke(life, maxLife);
     }
 
-    public void DoDamage (int damage)
+    private void Update()
+    {
+        PowerUpTimer();
+    }
+
+    public void PowerUpTimer()
+    {
+        if (isInvulnerable)
+        {
+            invulnerabilityTimer -= Time.deltaTime;
+            if (invulnerabilityTimer <= 0f)
+            {
+                isInvulnerable = false;
+                onInvulnerableEnd?.Invoke();
+                //Debug.Log("Protección terminada");
+            }
+        }
+    }
+
+    public void CollectInvulnerabilityPowerup(float duration)
+    {
+        isInvulnerable = true;
+        //Debug.Log("Protección activada");
+        invulnerabilityTimer = duration; // Por ejemplo, 5 segundos
+        onInvulnerableStart?.Invoke();
+        Debug.Log($"Invulnerabilidad activada por {duration} segundos");
+    }
+
+    public void DoDamage(int damage)
     {
         if (damage < 0)
         {
@@ -28,7 +69,11 @@ public class HealthSystem : MonoBehaviour
             return;
         }
 
+        if (isInvulnerable) return;
+
         life -= damage;
+        sfxSource.clip = damageSFX;
+        sfxSource.Play();
 
         if (life <= 0)
         {
@@ -41,6 +86,14 @@ public class HealthSystem : MonoBehaviour
         }
 
         Debug.Log("DoDamage", gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            onDie?.Invoke();
+        }
     }
 
     public void Heal (int plus)

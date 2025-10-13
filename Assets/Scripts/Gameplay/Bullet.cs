@@ -2,27 +2,39 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    //[SerializeField] GameObject bulletPrefab;
-    [SerializeField]private int damage = 20;
-
+    [SerializeField] private int damage = 20;
     private Rigidbody2D rigidBody;
+    [SerializeField] private GameObject effectPrefab;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip damageSFX;
+    [SerializeField] private AudioSource sfxSource;
 
     private void Awake ()
     {
         rigidBody = GetComponent<Rigidbody2D>();
+        if (sfxSource == null)
+        {
+            sfxSource = GetComponent<AudioSource>();
+        }
     }
-
-    public void Set (int speed, int damage)
+    public void SetBullet (int speed, int damage)
     {
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         rigidBody.velocity = transform.forward * speed;
     }
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.TryGetComponent(out HealthSystem healthSystem))
         {
             healthSystem.DoDamage(damage);
+        }
+        if (other.CompareTag("Enemy"))
+        {
+            GameObject effect = Instantiate(effectPrefab, transform.position, Quaternion.identity);
+            Destroy(effect, 0.5f);
+            Destroy(gameObject);
         }
     }
 }

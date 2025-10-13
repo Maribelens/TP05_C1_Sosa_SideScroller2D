@@ -1,27 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class AnimationStates : MonoBehaviour
 {
     [SerializeField] private Animator animator;
-    private PlayerController player;
+    private PlayerMovement player;
     public PlayerDataSo playerData;
     private static readonly int State = Animator.StringToHash("State");
     enum PlayerState
     {
         Idle = 1,
-        RightWalk = 2,
-        LeftWalk = 3,
-        Jump = 4,
-        Duck = 5,
-        Hurt = 6,
-        Die = 7
+        Walk = 2,
+        Jump = 3,
+        Hurt = 4,
     };
     [SerializeField] private PlayerState playerState = PlayerState.Idle;
-
-    //Walk, Jump, Slide, Attack, Hurt, Die
 
     private void Awake()
     {
@@ -34,21 +26,10 @@ public class AnimationStates : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKey(playerData.keyCodeRight))
+        if (Input.GetKey(playerData.keyCodeRight) || Input.GetKey(playerData.keyCodeLeft))
         {
-            playerState = PlayerState.RightWalk;
+            playerState = PlayerState.Walk;
             animator.SetInteger(State, (int)playerState);
-        }
-        else
-        {
-            Invoke(nameof(ResetAnim), 1);
-        }
-
-        if (Input.GetKey(playerData.keyCodeLeft))
-        {
-            playerState = PlayerState.LeftWalk;
-            animator.SetInteger(State, (int)playerState);
-            //Invoke(nameof(ResetAnim), 1);
         }
         else
         {
@@ -59,17 +40,9 @@ public class AnimationStates : MonoBehaviour
         {
             playerState = PlayerState.Jump;
             animator.SetInteger(State, (int)playerState);
-            //Invoke(nameof(ResetAnim), 1);
         }
         else
         {
-            Invoke(nameof(ResetAnim), 1);
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            playerState = PlayerState.Duck;
-            animator.SetInteger(State, (int)playerState);
             Invoke(nameof(ResetAnim), 1);
         }
     }

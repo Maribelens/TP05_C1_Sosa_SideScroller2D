@@ -2,51 +2,63 @@ using UnityEngine;
 
 public class Pickable : MonoBehaviour
 {
-    public enum PickableType { Coin, Diamond, Protection }
+    public enum PickableType { Coin, Diamond, Protection, Health }
+    [SerializeField] private HealthSystem health;
 
     [SerializeField] private PickableType type;
     [SerializeField] private AudioClip pickSound;
     [SerializeField] private GameObject EffectPrefab;
-    [SerializeField] private GameManager gmManager;
-    //public enum PickableType { Health, Stamina, PowerUp }
-    //public PickableType type;
-    //public int amount = 10;
-    //public GameObject pickupEffect; // Partículas o feedback visual
-    //public AudioClip pickupSound;
+    [SerializeField] private GameManager gameManager;
 
+    //private float protectionDuration = 5f;
+    //private bool refreshIfActive = true;
+
+    private void Awake()
+    {
+        if (gameManager == null)
+            gameManager = GetComponent<GameManager>();
+
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
+            HealthSystem health = collision.GetComponent<HealthSystem>();
+
             if (EffectPrefab != null)
             {
                 GameObject effect = Instantiate(EffectPrefab, transform.position, Quaternion.identity);
                 Destroy(effect, 2f);
             }
             Destroy(gameObject);
-        }
-        if (pickSound != null)
-        {
-            AudioSource.PlayClipAtPoint(pickSound, transform.position);
-            
+
+            if (pickSound != null)
+            {
+                AudioSource.PlayClipAtPoint(pickSound, transform.position);
+            }
+
+            switch (type)
+            {
+                case PickableType.Coin:
+                    gameManager.AddCoins(1);
+                    break;
+
+                case PickableType.Diamond:
+                    gameManager.AddGems(1);
+                    break;
+                case PickableType.Health:
+                    gameManager.AddHealth();
+                    break;
+                case PickableType.Protection:
+                    health.CollectInvulnerabilityPowerup(7f);
+                    //gameManager.ActivateProtection(); // 5 seg de protección
+                    //gameManager.DeactivateProtection();
+                    break;
+            }
+            Debug.Log("Player recogio un objeto");
         }
 
-        switch (type)
-        {
-            case PickableType.Coin:
-                gmManager.AddCoins(1);
-                break;
-
-            case PickableType.Diamond:
-                gmManager.AddGems(1);
-                break;
-
-            case PickableType.Protection:
-                gmManager.ActivateShield(5f); // 5 seg de protección
-                break;
-        }
-        Debug.Log("Player recogio un objeto");
     }
 }
 
