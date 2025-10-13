@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UiMainMenu : MonoBehaviour
@@ -28,7 +29,7 @@ public class UiMainMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             TogglePause();
         }
@@ -74,9 +75,10 @@ public class UiMainMenu : MonoBehaviour
 
     private void ExitGame()
     {
-        #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-        #endif 
+        //#if UNITY_EDITOR
+        //        UnityEditor.EditorApplication.isPlaying = false;
+        //#endif
+        SceneManager.LoadScene(0);
     }
 
     private void OnCreditsBackClicked()
