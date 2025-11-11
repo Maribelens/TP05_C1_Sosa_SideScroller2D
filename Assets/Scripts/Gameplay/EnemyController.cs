@@ -27,16 +27,17 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb2D.velocity = new Vector2(speed, rb2D.velocity.y);  
+        rb2D.velocity = new Vector2(speed, rb2D.velocity.y);    // Aplica movimiento constante en el eje X  
     }
 
     private void HealthSystem_onDie()
     {
+        // Genera efecto visual si está asignado
         if (deathEffectPrefab != null)
         {
             GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-            Destroy(effect, 2f);
+            Destroy(effect, 2f);    // Destruye el efecto tras un breve tiempo
         }
-        Destroy(gameObject);
+        Destroy(gameObject);    // Elimina al enemigo de la escena
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -62,17 +61,15 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
+        // Detecta entrada de salto
         if (Input.GetKeyDown(playerData.keyCodeJump))
-        {
             jumpInput = true;
-        }
+
+        // Verifica si el jugador está tocando el suelo
         isGrounded = Physics2D.OverlapBox(groundController.position, boxDimensions, 0f, jumpLayers);
-        //horizontalEntrance = Input.GetAxisRaw("Horizontal");
 
         if (Input.GetMouseButtonDown(0))
-        {
             Fire();
-        }
     }
 
     private void FixedUpdate()
@@ -94,16 +91,17 @@ public class PlayerMovement : MonoBehaviour
     private void Movement()
     {
         float moveInput = 0f;
+
+        // Impide moverse si está en el aire (según configuración)
         if (!isGrounded && !canMoveDuringJump) { return; }
 
+        // Detecta entrada de movimiento horizontal
         if (Input.GetKey(playerData.keyCodeLeft))
-        {
             moveInput = -1f;
-        }
         else if (Input.GetKey(playerData.keyCodeRight))
-        {
             moveInput = 1f;
-        }
+
+        // Cambia la dirección visual del personaje si corresponde
         if ((moveInput > 0 && !LookingRight()) || (moveInput < 0 && LookingRight()))
         {
             TurnAround();
@@ -114,6 +112,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void TurnAround()
     {
+        // Invierte la escala en X para voltear el sprite
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
@@ -121,11 +120,13 @@ public class PlayerMovement : MonoBehaviour
 
     private bool LookingRight()
     {
+        // Devuelve si el jugador está mirando hacia la derecha
         return transform.localScale.x == 1;
     }
 
     private void TryJump()
     {
+        // Verifica condiciones de salto antes de ejecutarlo
         if (!jumpInput) { return; }
         if (!isGrounded) { return; }
         Jump();
@@ -133,6 +134,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+        // Aplica fuerza de salto y reproduce el sonido correspondiente
         jumpInput = false;
         rigidBody.AddForce(Vector2.up * playerData.jumpForce, ForceMode2D.Impulse);
         sfxSource.clip = jumpSFX;
@@ -141,32 +143,36 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        // Dibuja en el editor el área de detección del suelo
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(groundController.position, boxDimensions);
     }
 
     private void Fire()
     {
-        if (EventSystem.current.IsPointerOverGameObject()) // Para saber si le pego a un objeto de UI
+        // Evita disparar si el clic se hizo sobre un elemento de la UI
+        if (EventSystem.current.IsPointerOverGameObject())
             return;
 
+        // Instancia y configura la bala
         Bullet bullet = Instantiate(playerData.bulletPrefab);
         bullet.transform.position = firePoint.position;
         bullet.transform.rotation = Quaternion.identity;
         bullet.gameObject.layer = LayerMask.NameToLayer("Player");
 
+        // Calcula dirección hacia el puntero del mouse
         Vector3 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         bullet.transform.LookAt(targetPos);
         bullet.SetBullet(20, 30);
 
+        // Reproduce sonido de lanzamiento
         sfxSource.clip = throwSFX;
         sfxSource.Play();
-        //Vector3 direction = targetPos - firePoint.position;
-        //angulos a calcular: jugador, mouse
     }
 
     private void HealthSystem_onDie()
     {
+        // Reproduce efecto visual y programa la eliminación del jugador
         if (deathEffectPrefab != null)
         {
             GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
@@ -177,6 +183,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleDeath()
     {
+        // Informa al GameManager y destruye el objeto jugador
         gameManager.PlayerDefeated();
         Destroy(gameObject);
         Debug.Log("Murió el player");

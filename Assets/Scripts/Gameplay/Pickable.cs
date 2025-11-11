@@ -10,9 +10,6 @@ public class Pickable : MonoBehaviour
     [SerializeField] private GameObject EffectPrefab;
     [SerializeField] private GameManager gameManager;
 
-    //private float protectionDuration = 5f;
-    //private bool refreshIfActive = true;
-
     private void Awake()
     {
         if (gameManager == null)
@@ -26,6 +23,7 @@ public class Pickable : MonoBehaviour
         {
             HealthSystem health = collision.GetComponent<HealthSystem>();
 
+            // Efecto visual y sonoro al recoger el objeto
             if (EffectPrefab != null)
             {
                 GameObject effect = Instantiate(EffectPrefab, transform.position, Quaternion.identity);
@@ -38,6 +36,7 @@ public class Pickable : MonoBehaviour
                 AudioSource.PlayClipAtPoint(pickSound, transform.position);
             }
 
+            // Aplica el efecto según el tipo de objeto recogido
             switch (type)
             {
                 case PickableType.Coin:
@@ -51,9 +50,7 @@ public class Pickable : MonoBehaviour
                     gameManager.AddHealth();
                     break;
                 case PickableType.Protection:
-                    health.CollectInvulnerabilityPowerup(7f);
-                    //gameManager.ActivateProtection(); // 5 seg de protección
-                    //gameManager.DeactivateProtection();
+                    gameManager.ActivateProtection();
                     break;
             }
             Debug.Log("Player recogio un objeto");

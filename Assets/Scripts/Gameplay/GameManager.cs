@@ -1,13 +1,15 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Playing, Paused, GameOver, Victory }
-    public GameState CurrentState { get; private set; }
+    // Eventos para comunicar estados de juego
+    public event Action OnGameOver;
+    public event Action OnVictory;
 
 
     [Header("References")]
-    [SerializeField] private UiElements uiElements;
+    [SerializeField] private UIPickables pickablesUI;
     [SerializeField] private HealthSystem health;
 
     [Header("Pickables")]
@@ -19,26 +21,30 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip gameplayMusic;
     [SerializeField] private AudioClip gameOverMusic;
     [SerializeField] private AudioClip victoryMusic;
-    //[SerializeField] private AudioClip applauseSfx;
-    [SerializeField] private AudioSource musicGameplay;
-    [SerializeField] private AudioSource musicGameLoop;
+    [SerializeField] private AudioSource gameplayMusisSource;
+    [SerializeField] private AudioSource coreGameLoopMusicSource;
 
     private void Awake()
     {
-        uiElements = GameObject.Find("UI").GetComponent<UiElements>();
-        health = GameObject.Find("PLAYER").GetComponent<HealthSystem>();
-
-        musicGameplay.clip = gameplayMusic;
-        musicGameplay.Play();
+        if (gameplayMusisSource != null)
+        {
+            gameplayMusisSource.clip = gameplayMusic;
+            gameplayMusisSource.Play();
+        }
     }
 
     private void Start()
     {
         Time.timeScale = 1;
         health.onInvulnerableStart += ActivateProtection;
-        health.onInvulnerableEnd += DeactivateProtection;
     }
 
+    private void OnDestroy()
+    {
+        health.onInvulnerableStart -= ActivateProtection;
+    }
+
+    // Activa la protección temporal del jugador
     public void ActivateProtection()
     {
         if (health == null)
@@ -47,57 +53,56 @@ public class GameManager : MonoBehaviour
             return;
         }
         Debug.Log("Proteccion activada");
-        uiElements.StartProtectionScreen(7);
-        //health.CollectInvulnerabilityPowerup(duration);
-        // Acá podés cambiar color del jugador, activar un efecto, etc.
+        health.StartInvulnerability(7f);
     }
 
-    public void DeactivateProtection()
-    {
-        Debug.Log("Proteccion terminada");
-        uiElements.EndProtectionScreen();
-        // Acá revertís el color, desactivás el efecto, etc.
-    }
-
+    // Suma monedas y actualiza la interfaz
     public void AddCoins(int amount)
     {
         coins += amount;
-        uiElements.UpdatedCoins(coins);
+        pickablesUI.UpdateAmountCoins(coins);
         Debug.Log("Monedas: " + coins);
     }
+
+    // Suma gemas y actualiza la interfaz
     public void AddGems(int amount)
     {
         diamonds += amount;
-        uiElements.UpdatedDiamonds(diamonds);
+        pickablesUI.UpdateAmountDiamonds(diamonds);
         Debug.Log("Diamantes: " + diamonds);
     }
 
+    // Restaura salud del jugador
     public void AddHealth()
     {
         health.Heal(healtPlus);
     }
 
+    // Lógica de derrota del jugador
     public void PlayerDefeated()
     {
-        //CurrentState = GameState.GameOver;
         Time.timeScale = 0;
-        musicGameplay.Stop();
-        musicGameLoop.clip = gameOverMusic;
-        musicGameLoop.Play();
+        gameplayMusisSource.Stop();
 
-        uiElements.ShowGameOverScreen();
+        coreGameLoopMusicSource.clip = gameOverMusic;
+        coreGameLoopMusicSource.Play();
+
+        OnGameOver?.Invoke();
+
         Debug.Log("El alien fue derrotado");
     }
 
     public void PlayerVictory()
     {
+        // Lógica de victoria del jugador
         Time.timeScale = 0;
-        musicGameplay.Stop();
-        musicGameLoop.clip = victoryMusic;
-        //musicGameLoop.clip = applauseSfx;
-        musicGameLoop.Play();
+        gameplayMusisSource.Stop();
 
-        uiElements.ShowVictoryScreen();
+        coreGameLoopMusicSource.clip = victoryMusic;
+        coreGameLoopMusicSource.Play();
+
+        OnVictory?.Invoke();
+
         Debug.Log("El alien ha ganado");
     }
 

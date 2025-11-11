@@ -5,6 +5,8 @@ public class AnimationStates : MonoBehaviour
     [SerializeField] private Animator animator;
     private PlayerMovement player;
     public PlayerDataSo playerData;
+
+    // Hash optimizado del parámetro "State" del Animator (mejora el rendimiento)
     private static readonly int State = Animator.StringToHash("State");
     enum PlayerState
     {
@@ -33,7 +35,7 @@ public class AnimationStates : MonoBehaviour
         }
         else
         {
-            Invoke(nameof(ResetAnim), 1);
+            Invoke(nameof(ResetAnim), 1);   // Si no hay movimiento, vuelve a Idle tras 1 segundo
         }
 
         if (Input.GetKeyDown(playerData.keyCodeJump))
@@ -43,10 +45,11 @@ public class AnimationStates : MonoBehaviour
         }
         else
         {
-            Invoke(nameof(ResetAnim), 1);
+            Invoke(nameof(ResetAnim), 1);   // Si no salta, regresa a Idle tras 1 segundo
         }
     }
 
+    // Restaura la animación a estado Idle
     private void ResetAnim()
     {
         playerState = PlayerState.Idle;

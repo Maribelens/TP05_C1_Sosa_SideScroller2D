@@ -32,7 +32,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1571385455772592497}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -26.652573, y: -10.947397, z: 0.009958606}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -249,6 +249,8 @@ MonoBehaviour:
   damageSFX: {fileID: 8300000, guid: afbe2bc463a7dcd4daa38f4fdab68c16, type: 3}
   sfxSource: {fileID: 0}
   maxLife: 100
+  invulnerableTimeLeft: 0
+  isInvulnerable: 0
 --- !u!82 &4371517236983035430
 AudioSource:
   m_ObjectHideFlags: 0
