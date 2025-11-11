@@ -1,4 +1,4 @@
-# TP06_C1_Sosa_Platformer2D
+# TP05_C1_Sosa_SideScroller2D
 # [Oops! My Planet]
 
 ## 🎮 Descripción del Juego (Español)
