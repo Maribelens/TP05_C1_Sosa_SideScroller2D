@@ -53,8 +53,7 @@ Replayability: You can restart from the pause menu or after the game ends.
 
 ## 🔗 Enlaces
 
-- 🎮 **Jugar en Itch.io:** --> https://mb-lens.itch.io/world-out  
-- 💾 **Repositorio en GitHub:** [https://github.com/tuusuario/tu-repo]  
+- 🎮 **Jugar en Itch.io:** --> https://mb-lens.itch.io/oops-my-planet 
 
 
 ## ⚙️ Builds
